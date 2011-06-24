@@ -35,58 +35,58 @@
 	NSString *formatFile = [[NSBundle mainBundle] pathForResource:@"format" ofType:@"html" inDirectory:@"html/views/log"];
 	if(formatFile!=nil)
 		logFormat=[NSString stringWithContentsOfURL:[NSURL fileURLWithPath:formatFile] encoding:NSUTF8StringEncoding error:nil];
-	
-	
+
+
 	startFile = @"fileview";
 	//repository = historyController.repository;
 	[super awakeFromNib];
 	[historyController.treeController addObserver:self forKeyPath:@"selection" options:0 context:@"treeController"];
-	
+
 	self.groups = [NSMutableArray arrayWithCapacity:0];
-	
+
 	NSArray *items = [NSArray arrayWithObjects:
 					  [NSDictionary dictionaryWithObjectsAndKeys:
-					   startFile, ITEM_IDENTIFIER, 
-					   @"Source", ITEM_NAME, 
-					   nil], 
+					   startFile, ITEM_IDENTIFIER,
+					   @"Source", ITEM_NAME,
+					   nil],
 					  [NSDictionary dictionaryWithObjectsAndKeys:
-					   @"blame", ITEM_IDENTIFIER, 
-					   @"Blame", ITEM_NAME, 
-					   nil], 
+					   @"blame", ITEM_IDENTIFIER,
+					   @"Blame", ITEM_NAME,
+					   nil],
 					  [NSDictionary dictionaryWithObjectsAndKeys:
-					   @"log", ITEM_IDENTIFIER, 
-					   @"History", ITEM_NAME, 
-					   nil], 
+					   @"log", ITEM_IDENTIFIER,
+					   @"History", ITEM_NAME,
+					   nil],
 					  [NSDictionary dictionaryWithObjectsAndKeys:
-					   @"diff", ITEM_IDENTIFIER, 
-					   @"Diff", ITEM_NAME, 
-					   nil], 
+					   @"diff", ITEM_IDENTIFIER,
+					   @"Diff", ITEM_NAME,
+					   nil],
 					  nil];
 	[self.groups addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-							[NSNumber numberWithBool:NO], GROUP_SEPARATOR, 
+							[NSNumber numberWithBool:NO], GROUP_SEPARATOR,
 							[NSNumber numberWithInt:MGRadioSelectionMode], GROUP_SELECTION_MODE, // single selection group.
-							items, GROUP_ITEMS, 
+							items, GROUP_ITEMS,
 							nil]];
-	
+
 	NSArray *difft = [NSArray arrayWithObjects:
 					  [NSDictionary dictionaryWithObjectsAndKeys:
-					   @"l", ITEM_IDENTIFIER, 
-					   @"Local", ITEM_NAME, 
-					   nil], 
+					   @"l", ITEM_IDENTIFIER,
+					   @"Local", ITEM_NAME,
+					   nil],
 					  [NSDictionary dictionaryWithObjectsAndKeys:
-					   @"h", ITEM_IDENTIFIER, 
-					   @"HEAD", ITEM_NAME, 
-					   nil], 
+					   @"h", ITEM_IDENTIFIER,
+					   @"HEAD", ITEM_NAME,
+					   nil],
 					  nil];
 	[self.groups addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-							[NSNumber numberWithBool:NO], GROUP_SEPARATOR, 
+							[NSNumber numberWithBool:NO], GROUP_SEPARATOR,
 							[NSNumber numberWithInt:MGRadioSelectionMode], GROUP_SELECTION_MODE, // single selection group.
-							difft, GROUP_ITEMS, 
+							difft, GROUP_ITEMS,
 							@"Diff with:",GROUP_LABEL,
-							nil]]; 
-	
+							nil]];
+
 	[typeBar reloadData];
-	
+
 	[fileListSplitView setHidden:YES];
 	[self performSelector:@selector(restoreSplitViewPositiion) withObject:nil afterDelay:0];
 }
@@ -105,7 +105,7 @@
 		DLog(@"file=%@ == %@ => %d",file,lastFile,[file isEqualTo:lastFile]);
         if(![file isEqualTo:lastFile]){
             lastFile=file;
-            
+
             NSString *fileTxt = @"";
             if(startFile==@"fileview"){
                 fileTxt=[file textContents:&theError];
@@ -116,13 +116,13 @@
                 if(!theError)
                     fileTxt=[self parseBlame:fileTxt];
             }else if(startFile==@"log"){
-                fileTxt=[file log:logFormat error:&theError];		
+                fileTxt=[file log:logFormat error:&theError];
             }else if(startFile==@"diff"){
                 fileTxt=[file diff:diffType error:&theError];
                 if(!theError)
                     fileTxt=[GLFileView parseDiff:fileTxt];
             }
-            
+
             id script = [view windowScriptObject];
             if(!theError){
                 NSString *filePath = [file fullPath];
@@ -141,14 +141,14 @@
             [self updateSearch:searchField];
         }
 	}
-    
-	
+
+
 #ifdef DEBUG_BUILD
     DOMHTMLElement *dom=(DOMHTMLElement *)[[[view mainFrame] DOMDocument] documentElement];
 	NSString *domH=[dom outerHTML];
 	NSString *tmpFile=@"~/tmp/test.html";
 	[domH writeToFile:[tmpFile stringByExpandingTildeInPath] atomically:true encoding:NSUTF8StringEncoding error:nil];
-#endif 
+#endif
 }
 
 #pragma mark JavaScript log.js methods
@@ -236,7 +236,7 @@
 {
 	[historyController.treeController removeObserver:self forKeyPath:@"selection"];
 	[self saveSplitViewPosition];
-	
+
 	[super closeView];
 }
 
@@ -250,7 +250,7 @@
 	[newTxt replaceOccurrencesOfString:@">" withString:@"&gt;" options:NSLiteralSearch range:NSMakeRange(0, [newTxt length])];
     [newTxt replaceOccurrencesOfString:@"\"" withString:@"&quot;" options:NSLiteralSearch range:NSMakeRange(0, [newTxt length])];
     [newTxt replaceOccurrencesOfString:@"'" withString:@"&apos;" options:NSLiteralSearch range:NSMakeRange(0, [newTxt length])];
-	
+
 	return newTxt;
 }
 
@@ -265,7 +265,7 @@
 			granTotal=tot;
 		[stats setObject:[NSArray arrayWithObjects:[NSNumber numberWithInteger:add],[NSNumber numberWithInteger:rem],[NSNumber numberWithInteger:tot],nil] forKey:[stat objectAtIndex:2]];
 	}
-	
+
 	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
 	NSMutableString *res=[NSMutableString string];
 	[res appendString:@"<table id='filelist'>"];
@@ -281,11 +281,11 @@
 			txt=[NSString stringWithFormat:@"%@ -&gt; %@",file,[fileStatus objectAtIndex:2]];
 			fileName=[fileStatus objectAtIndex:2];
 		}
-		
+
 		NSArray *stat=[stats objectForKey:fileName];
 		NSInteger add=[[stat objectAtIndex:0] integerValue];
 		NSInteger rem=[[stat objectAtIndex:1] integerValue];
-		
+
 		[res appendString:@"<tr><td class='name'>"];
 		[res appendString:[NSString stringWithFormat:@"<a class='%@' href='#%@' representedFile='%@'>%@</a>",status,file,fileName,txt]];
 		[res appendString:@"</td><td class='bar'>"];
@@ -302,19 +302,19 @@
 + (NSString *)parseDiff:(NSString *)txt
 {
 	txt=[self escapeHTML:txt];
-    
+
 	NSMutableString *res=[NSMutableString string];
     NSScanner *scan=[NSScanner scannerWithString:txt];
     NSString *block;
-    
+
     if(![txt hasPrefix:@"diff --"])
         [scan scanUpToString:@"diff --" intoString:&block];  //move to first diff
-    
+
     while([scan scanString:@"diff --" intoString:NULL]){ // is a diff start?
         [scan scanUpToString:@"\ndiff --" intoString:&block];
         [res appendString:[GLFileView parseDiffBlock:[NSString stringWithFormat:@"diff --%@",block]]];
     }
-    
+
     return res;
 }
 
@@ -323,23 +323,23 @@
 	NSMutableString *res=[NSMutableString string];
     NSScanner *scan=[NSScanner scannerWithString:txt];
     NSString *block;
-    
+
     [scan scanUpToString:@"\n@@" intoString:&block];
     [res appendString:@"<table class='diff'><thead>"];
     [res appendString:[GLFileView parseDiffHeader:block]];
     [res appendString:@"</td></tr></thead><tbody>"];
-    
+
     if([block rangeOfString:@"Binary files"].location!=NSNotFound){
         [res appendString:[GLFileView parseBinaryDiff:block]];
     }
-    
+
     while([scan scanString:@"@@" intoString:NULL]){
         [scan scanUpToString:@"\n@@" intoString:&block];
         [res appendString:[GLFileView parseDiffChunk:[NSString stringWithFormat:@"@@%@",block]]];
     }
-    
+
     [res appendString:@"</tbody></table>"];
-    
+
     return res;
 }
 
@@ -348,10 +348,10 @@
 	NSMutableString *res=[NSMutableString string];
     NSScanner *scan=[NSScanner scannerWithString:txt];
     NSString *block;
-    
+
     [scan scanUpToString:@"Binary files" intoString:NULL];
     [scan scanUpToString:@"" intoString:&block];
-    
+
     NSArray *files=[self getFilesNames:block];
     [res appendString:@"<tr class='images'><td>"];
     [res appendString:[NSString stringWithFormat:@"%@<br/>",[files objectAtIndex:0]]];
@@ -368,7 +368,7 @@
         }
     }
     [res appendString:@"</td></tr>"];
-    
+
     return res;
 }
 
@@ -376,30 +376,30 @@
 {
     NSEnumerator *lines = [[txt componentsSeparatedByString:@"\n"] objectEnumerator];
     NSMutableString *res=[NSMutableString string];
-    
+
     NSString *line;
     int l_line[32]; // FIXME: make dynamic
     int r_line;
-    
+
     line=[lines nextObject];
     DLog(@"-=%@=-",line);
-	
+
 	int arity = 0; /* How many files are merged here? Count the '@'! */
 	while ([line characterAtIndex:arity] == '@')
 		arity++;
-	
+
     NSRange hr = NSMakeRange(arity+1, [line rangeOfString:@" @@"].location-arity-1);
     NSString *header=[line substringWithRange:hr];
-    
+
     NSArray *pos=[header componentsSeparatedByString:@" "];
     NSArray *pos_r=[[pos objectAtIndex:arity-1] componentsSeparatedByString:@","];
-    
+
 	for(int i=0; i<arity-1; i++){
 		NSArray *pos_l=[[pos objectAtIndex:i] componentsSeparatedByString:@","];
 		l_line[i]=abs([[pos_l objectAtIndex:0]integerValue]);
 	}
     r_line=[[pos_r objectAtIndex:0]integerValue];
-    
+
     [res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan='%d'>%@</td></tr>",arity+1,line]];
     while((line=[lines nextObject])){
         NSString *prefix=[line substringToIndex:arity-1];
@@ -431,7 +431,7 @@
 			[res appendString:[NSString stringWithFormat:@"<td class='r'>%d</td>",r_line++]];
 		}
 		if(![prefix hasPrefix:@"\\"]){
-            [res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:arity-1]]];								
+            [res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:arity-1]]];
         }
     }
     return res;
@@ -441,7 +441,7 @@
 {
     NSEnumerator *lines = [[txt componentsSeparatedByString:@"\n"] objectEnumerator];
     NSMutableString *res=[NSMutableString string];
-    
+
     NSString *line=[lines nextObject];
     NSString *fileName=[self getFileName:line];
     [res appendString:[NSString stringWithFormat:@"<tr id='%@'><td colspan='33'><div style='float:left;'>",fileName]];
@@ -449,13 +449,13 @@
         [res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
     }while((line=[lines nextObject]));
     [res appendString:@"</div>"];
-    
+
     if([txt rangeOfString:@"Binary files"].location==NSNotFound){
-        [res appendString:[NSString stringWithFormat:@"<div class='filemerge'><a href='' onclick='openFileMerge(\"%@\",\"{SHA_PREV}\",\"{SHA}\"); return false;'><img src='GitX://app:/filemerge' width='32' height='32'/><br/>open in<br/>FileMerge</a></div>",fileName]];
+        [res appendString:[NSString stringWithFormat:@"<div class='filemerge'><a href='' onclick='openFileMerge(\"%@\",\"{SHA_PREV}\",\"{SHA}\"); return false;'>(FileMerge)</div>",fileName]];
     }
-    
+
     [res appendString:@"</td></tr>"];
-    
+
     return res;
 }
 
@@ -464,12 +464,12 @@
     NSRange b = [line rangeOfString:@"b/"];
 	if (b.length == 0)
 		b = [line rangeOfString:@"--cc "];
-	
+
     NSString *file=[line substringFromIndex:b.location+b.length];
-	
+
     DLog(@"line=%@",line);
     DLog(@"file=%@",file);
-    
+
 	return file;
 }
 
@@ -489,7 +489,7 @@
     if (![b isAbsolutePath]) {
         b=[b substringFromIndex:2];
     }
-    
+
     return [NSArray arrayWithObjects:a,b,nil];
 }
 
@@ -514,7 +514,7 @@
 +(BOOL)isDiffHeader:(NSString*)line
 {
     unichar c=[line characterAtIndex:0];
-    return (c=='i') || (c=='m') || (c=='n') || (c=='d') || (c=='-') || (c=='+'); 
+    return (c=='i') || (c=='m') || (c=='n') || (c=='d') || (c=='-') || (c=='+');
 }
 
 +(BOOL)isImage:(NSString*)file
@@ -541,12 +541,12 @@
 - (NSString *) parseBlame:(NSString *)txt
 {
     txt=[GLFileView escapeHTML:txt];
-    
+
     NSArray *lines = [txt componentsSeparatedByString:@"\n"];
     NSString *line;
     NSMutableDictionary *headers=[NSMutableDictionary dictionary];
     NSMutableString *res=[NSMutableString string];
-    
+
     [res appendString:@"<table class='blocks'>\n"];
     int i=0;
     while(i<[lines count]){
@@ -584,7 +584,7 @@
                 [headers setObject:block forKey:[header objectAtIndex:0]];
             }
             [res appendString:[headers objectForKey:[header objectAtIndex:0]]];
-            
+
             NSMutableString *code=[NSMutableString string];
             do{
                 line=[lines objectAtIndex:i++];
@@ -592,7 +592,7 @@
             line=[line substringFromIndex:1];
             [code appendString:line];
             [code appendString:@"\n"];
-            
+
             int n;
             for(n=1;n<nLines;n++){
                 do{
@@ -608,10 +608,10 @@
             break;
         }
         [res appendString:@"</tr>\n"];
-    }  
+    }
     [res appendString:@"</table>\n"];
     //DLog(@"%@",res);
-    
+
     return (NSString *)res;
 }
 
@@ -638,23 +638,23 @@
 - (void)splitView:(NSSplitView *)splitView resizeSubviewsWithOldSize:(NSSize)oldSize
 {
     NSRect newFrame = [splitView frame];
-    
+
     float dividerThickness = [splitView dividerThickness];
-    
+
     NSView *leftView = [[splitView subviews] objectAtIndex:0];
     NSRect leftFrame = [leftView frame];
     leftFrame.size.height = newFrame.size.height;
-    
+
     if ((newFrame.size.width - leftFrame.size.width - dividerThickness) < kFileListSplitViewRightMin) {
         leftFrame.size.width = newFrame.size.width - kFileListSplitViewRightMin - dividerThickness;
     }
-    
+
     NSView *rightView = [[splitView subviews] objectAtIndex:1];
     NSRect rightFrame = [rightView frame];
     rightFrame.origin.x = leftFrame.size.width + dividerThickness;
     rightFrame.size.width = newFrame.size.width - rightFrame.origin.x;
     rightFrame.size.height = newFrame.size.height;
-    
+
     [leftView setFrame:leftFrame];
     [rightView setFrame:rightFrame];
 }
@@ -673,7 +673,7 @@
 	float position = [[NSUserDefaults standardUserDefaults] floatForKey:kHFileListSplitViewPositionDefault];
 	if (position < 1.0)
 		position = 200;
-	
+
 	[fileListSplitView setPosition:position ofDividerAtIndex:0];
 	[fileListSplitView setHidden:NO];
 }
