@@ -70,7 +70,11 @@
 					  forKey:kUseITerm2];
 	[defaultValues setObject:[NSNumber numberWithBool:NO]
 					  forKey:kITerm2Available];
+
 	[[NSUserDefaults standardUserDefaults] registerDefaults:defaultValues];
+
+	[[NSUserDefaults standardUserDefaults] setBool:TRUE forKey:@"WebKitDeveloperExtras"];
+[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 + (int) commitMessageViewVerticalLineLength
@@ -107,7 +111,7 @@
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kShowWhitespaceDifferences];
 }
-							  
+
 + (BOOL) refreshAutomatically
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kRefreshAutomatically];
@@ -203,19 +207,19 @@
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kUseITerm2];
 }
 
-+ (BOOL) isITerm2Available 
++ (BOOL) isITerm2Available
 {
 	NSString *iTermPath = [[NSWorkspace sharedWorkspace] absolutePathForAppBundleWithIdentifier:@"com.googlecode.iterm2"];
 	[self setITerm2Available:[[NSFileManager defaultManager] fileExistsAtPath:iTermPath]];
-	
+
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kITerm2Available];
 }
 
-+ (void) setITerm2Available:(BOOL)iTerm2Available 
++ (void) setITerm2Available:(BOOL)iTerm2Available
 {
 	if (!iTerm2Available)
 		[[NSUserDefaults standardUserDefaults] setBool:iTerm2Available forKey:kUseITerm2];
-	
+
 	[[NSUserDefaults standardUserDefaults] setBool:iTerm2Available forKey:kITerm2Available];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
